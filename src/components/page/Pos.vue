@@ -10,12 +10,16 @@
               <el-table-column prop="count" label="数量" width="60"></el-table-column>
               <el-table-column prop="price" label="价格" width="70"></el-table-column>
               <el-table-column label="操作" width="100" fixed="right">
-                <template>
-                  <el-button type="text" size="small">删除</el-button>
-                  <el-button type="text" size="small">增加</el-button>
+                <template scope="scope">
+                  <el-button type="text" size="small" >删除</el-button>
+                  <!-- 直接增加数量scope.row好神奇喔 -->
+                  <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <div class="total">
+             <small> 数量： </small>{{totalCount}} &nbsp;&nbsp;&nbsp;&nbsp; <small>金额：</small>{{totalMony}}元
+            </div>
             <div class="btnn">
               <el-button type="warning">挂单</el-button>
               <el-button type="danger">删除</el-button>
@@ -32,7 +36,7 @@
           <div class="title">常用商品</div>
           <div class="oftenUse-list">
             <ul>
-              <li v-for="goods in oftenUse1">
+              <li v-for="goods in oftenUse1" @click="addOrderList(goods)">
                 <span>{{goods.goodsName}}</span>
                 <span class="often-price">${{goods.price}}</span>
               </li>
@@ -44,7 +48,7 @@
             <el-tab-pane label="汉堡">
               <div>
                 <ul class="cookList">
-                  <li v-for="foods in type0">
+                  <li v-for="foods in type0" @click="addOrderList(foods)">
                     <span class="foodImg">
                       <img src="foods.goodsImg" width="100%" />
                     </span>
@@ -56,7 +60,7 @@
             </el-tab-pane>
             <el-tab-pane label="零食">
                <ul class="cookList">
-                  <li v-for="foods in type1">
+                  <li v-for="foods in type1" @click="addOrderList(foods)">
                     <span class="foodImg">
                       <img src="foods.goodsImg" width="100%" />
                     </span>
@@ -67,7 +71,7 @@
             </el-tab-pane>
             <el-tab-pane label="饮料">
                <ul class="cookList">
-                  <li v-for="foods in type2">
+                  <li v-for="foods in type2" @click="addOrderList(foods)">
                     <span class="foodImg">
                       <img src="foods.goodsImg" width="100%" />
                     </span>
@@ -78,7 +82,7 @@
             </el-tab-pane>
             <el-tab-pane label="套餐">
                <ul class="cookList">
-                  <li v-for="foods in type3">
+                  <li v-for="foods in type3" @click="addOrderList(foods)">
                     <span class="foodImg">
                       <img src="foods.goodsImg" width="100%" />
                     </span>
@@ -100,34 +104,14 @@ export default {
   name: 'pos',
   data () {
     return {
-      tableData: [
-        {
-          goodsName: '可口可乐',
-          price: 8,
-          count: 1
-        },
-        {
-          goodsName: '香辣鸡腿堡',
-          price: 15,
-          count: 1
-        },
-        {
-          goodsName: '爱心薯条',
-          price: 8,
-          count: 1
-        },
-        {
-          goodsName: '甜筒',
-          price: 8,
-          count: 1
-        }
-      ],
-      oftenUse1: [ ],
+      tableData: [],
+      oftenUse1: [],
       type0: [],
       type1: [],
       type2: [],
-      type3: []
-
+      type3: [],
+      totalMony:0,
+      totalCount:0
     }
   },
   created:function(){
@@ -159,6 +143,38 @@ export default {
     var heightOrder = document.body.clientHeight
     console.log(heightOrder)
     document.getElementById('order').style.height = heightOrder + 'px'
+  },
+  methods:{
+    addOrderList(goods){
+      //判断是否存在
+      this.totalMony = 0;
+      this.totalCount = 0;
+      let isHave = false;
+      for(let i = 0 ;i<this.tableData.length ; i ++){
+        if(this.tableData[i].goodsId==goods.goodsId){
+          isHave = true
+        }
+      }
+      if(isHave){
+        //存在就改变数量
+        let arr = this.tableData.filter(a=>a.goodsId == goods.goodsId);
+        arr[0].count++;
+      }else{
+        //不存在就要重现申请，主要是count为1
+        let newGoods = {
+          goodsId:goods.goodsId,
+          goodsName:goods.goodsName,
+          price:goods.price,
+          count:1
+        }
+        this.tableData.push(newGoods)
+      }
+      this.tableData.forEach((element)=>{
+        this.totalCount+=element.count;
+        //计算价格，原价格加上后面的单价乘以数量
+        this.totalMony=this.totalMony+(element.price*element.count);
+      })
+    }
   }
 }
 </script>
@@ -202,6 +218,7 @@ export default {
   padding: 2px;
   float: left;
   margin: 2px;
+  cursor: pointer;
 }
 .cookList li span {
   display: block;
@@ -211,7 +228,7 @@ export default {
   width: 40%;
 }
 .foodName {
-  font-size: 18px;
+  font-size: 16px;
   padding-left: 10px;
   color: brown;
 }
@@ -219,5 +236,10 @@ export default {
   font-size: 16px;
   padding-left: 10px;
   padding-top: 10px;
+}
+.total{
+  background-color: #fff;
+  padding: 10px;
+  border-bottom: 1px solid red;
 }
 </style>
