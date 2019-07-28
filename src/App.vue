@@ -9,7 +9,7 @@
 
 <script>
 import leftNav from '@/components/common/leftNav'
-export default {
+export default{
   name: 'app',
   components:{
     leftNav
