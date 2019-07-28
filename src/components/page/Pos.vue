@@ -1,6 +1,5 @@
 <template>
   <div class="pos">
-Hello my project
   </div>
 </template>
 
