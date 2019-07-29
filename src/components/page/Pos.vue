@@ -11,7 +11,7 @@
               <el-table-column prop="price" label="价格" width="70"></el-table-column>
               <el-table-column label="操作" width="100" fixed="right">
                 <template scope="scope">
-                  <el-button type="text" size="small" >删除</el-button>
+                  <el-button type="text" size="small" @click=" delateGoods(scope.row)" >删除</el-button>
                   <!-- 直接增加数量scope.row好神奇喔 -->
                   <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                 </template>
@@ -22,8 +22,8 @@
             </div>
             <div class="btnn">
               <el-button type="warning">挂单</el-button>
-              <el-button type="danger">删除</el-button>
-              <el-button type="success">结账</el-button>
+              <el-button type="danger" @click="deleteAllGoods">删除</el-button>
+              <el-button type="success" @click="checkOut">结账</el-button>
             </div>
           </el-tab-pane>
           <el-tab-pane label="挂单"></el-tab-pane>
@@ -169,11 +169,46 @@ export default {
         }
         this.tableData.push(newGoods)
       }
-      this.tableData.forEach((element)=>{
+      this.getAllMoney();
+    
+    },
+    //删除单个商品 需要改变count和金额
+    delateGoods(goods){
+      //过滤出除了goodsid以外的id
+      this.tableData = this.tableData.filter(o=>o.goodsId!=goods.goodsId);
+      this.getAllMoney();
+    },
+    //提出来为了更好地复用，计算金额和count
+    getAllMoney(){
+      this.totalCount = 0;
+      this.totalMony = 0;
+      if(this.tableData){
+        this.tableData.forEach((element)=>{
         this.totalCount+=element.count;
         //计算价格，原价格加上后面的单价乘以数量
         this.totalMony=this.totalMony+(element.price*element.count);
       })
+      }
+    },
+    //删除所有商品
+    deleteAllGoods(){
+      this.tableData = [];
+      this.totalMony = 0;
+      this.totalCount = 0;
+    },
+    //结账
+    checkOut(){
+      if(this.totalCount!=0){
+        this.tableData = [];
+      this.totalMony = 0;
+      this.totalCount = 0;
+      this.$message({
+        message:"结账成功",
+        type:'success'
+      })
+      }else{
+        this.$message.error('结账不能为空！');
+      }
     }
   }
 }
