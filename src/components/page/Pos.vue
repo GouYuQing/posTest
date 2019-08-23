@@ -20,14 +20,81 @@
             <div class="total">
              <small> 数量： </small>{{totalCount}} &nbsp;&nbsp;&nbsp;&nbsp; <small>金额：</small>{{totalMony}}元
             </div>
-            <div class="btnn">
-              <el-button type="warning">挂单</el-button>
+            <div class="btnn" >
+              <el-button type="warning" @click="getFoods">挂单</el-button>
               <el-button type="danger" @click="deleteAllGoods">删除</el-button>
               <el-button type="success" @click="checkOut">结账</el-button>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="挂单"></el-tab-pane>
-          <el-tab-pane label="外卖"></el-tab-pane>
+          <el-tab-pane label="挂单">
+            <div id="cancelled" style="display:none">
+              <el-table :data="tableData" border show-summary style="width:100%">
+              <el-table-column prop="goodsName" label="商品名称"></el-table-column>
+              <el-table-column prop="count" label="数量" width="60"></el-table-column>
+              <el-table-column prop="price" label="价格" width="70"></el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template scope="scope">
+                  <el-button type="text" size="small" @click=" delateGoods(scope.row)" >删除</el-button>
+                  <!-- 直接增加数量scope.row好神奇喔 -->
+                  <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="total">
+             <small> 数量： </small>{{totalCount}} &nbsp;&nbsp;&nbsp;&nbsp; <small>金额：</small>{{totalMony}}元
+            </div>
+            <div class="btnn" scope="scope">
+              <el-button type="warning">挂单</el-button>
+              <el-button type="danger" @click="deleteAllGoods">删除</el-button>
+              <el-button type="success" @click="checkOut">结账</el-button>
+            </div>
+            </div>
+             <div id="cancelled1">
+               <el-table :data="tableData" border show-summary style="width:100%">
+              <el-table-column label="商品名称"></el-table-column>
+              <el-table-column label="数量" width="60"></el-table-column>
+              <el-table-column  label="价格" width="70"></el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template>
+                  <el-button type="text" size="small"></el-button>
+                  <!-- 直接增加数量scope.row好神奇喔 -->
+                  <el-button type="text" size="small" ></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="total">
+             <small> 数量： 0</small> &nbsp;&nbsp;&nbsp;&nbsp; <small>金额：0</small>&nbsp;&nbsp;元
+            </div>
+            <div class="btnn">
+              <el-button type="warning">挂单</el-button>
+              <el-button type="danger">删除</el-button>
+              <el-button type="success">结账</el-button>
+            </div>
+             </div>
+          </el-tab-pane>
+          <el-tab-pane label="外卖">
+              <el-table :data="tableData" border show-summary style="width:100%">
+              <el-table-column prop="goodsName" label="商品名称"></el-table-column>
+              <el-table-column prop="count" label="数量" width="60"></el-table-column>
+              <el-table-column prop="price" label="价格" width="70"></el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
+                <template scope="scope">
+                  <el-button type="text" size="small" @click=" delateGoods(scope.row)" >删除</el-button>
+                  <!-- 直接增加数量scope.row好神奇喔 -->
+                  <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="total">
+             <small> 数量： </small>{{totalCount}} &nbsp;&nbsp;&nbsp;&nbsp; <small>金额：</small>{{totalMony}}元
+            </div>
+            <div class="btnn">
+              <el-button type="warning">挂单</el-button>
+              <el-button type="danger" @click="deleteAllGoods">删除</el-button>
+              <el-button type="success" @click="checkOut">结账</el-button>
+            </div>               
+         
+          </el-tab-pane>
         </el-tabs>
       </el-col>
 
@@ -116,32 +183,31 @@ export default {
   },
   created:function(){
     //一旦创建就执行
-    axios.get('https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods')
+    axios.get('http://localhost:5000/getData')
     .then(response=>{
-      // console.log(response)从远端读取数据
-      this.oftenUse1 = response.data
+      // console.log(response.data);
+      this.oftenUse1 = response.data;
     })
     .catch(error=>{
       // console.log(error)
-      // alert('网络错误，访问的网页丢失了')
+      alert('网络错误，访问的网页丢失了')
     })
-    axios.get('https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/typeGoods')
+    axios.get('http://localhost:5000/getData')
      .then(response=>{
-      // console.log(response)从远端读取数据
-      this.type0 = response.data[0]
-      this.type1 = response.data[1]
-      this.type2 = response.data[2]
-      this.type3 = response.data[3]
-
+       console.log(response.data);
+      this.type0.push(response.data[0],response.data[1],response.data[2]);
+      this.type1.push(response.data[3],response.data[4],response.data[5]);
+      this.type2.push(response.data[6],response.data[7]);
+      this.type3.push(response.data[8],response.data[9]);
     })
     .catch(error=>{
       // console.log(error)
-      // alert('网络错误，访问的网页丢失了')
+      alert('网络错误，访问的网页丢失了')
     })
   },
   mounted: function () {
     var heightOrder = document.body.clientHeight
-    console.log(heightOrder)
+    // console.log(heightOrder)
     document.getElementById('order').style.height = heightOrder + 'px'
   },
   methods:{
@@ -208,6 +274,17 @@ export default {
       })
       }else{
         this.$message.error('结账不能为空！');
+      }
+    },
+    getFoods(){
+      let flag = 1;
+      if(flag == 1){
+      document.getElementById('cancelled').style.display = 'block';
+      document.getElementById('cancelled1').style.display = 'none';
+      }else{
+      document.getElementById('cancelled').style.display = 'none';
+      document.getElementById('cancelled1').style.display = 'block';
+      flag = 1;
       }
     }
   }
